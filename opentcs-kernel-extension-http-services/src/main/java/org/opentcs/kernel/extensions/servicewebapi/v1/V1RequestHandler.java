@@ -272,8 +272,10 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterEnabled(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapterEnabled(ctx.pathParam("NAME"),
-                                ctx.queryParam(QUERY_PARAM_NEW_VALUE));
+    vehicleHandler.putVehicleCommAdapterEnabled(
+        ctx.pathParam("NAME"),
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
+    );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
@@ -332,8 +334,10 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterAttachment(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapter(ctx.pathParam("NAME"),
-    ctx.queryParam(QUERY_PARAM_NEW_VALUE));
+    vehicleHandler.putVehicleCommAdapter(
+        ctx.pathParam("NAME"),
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
+    );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
