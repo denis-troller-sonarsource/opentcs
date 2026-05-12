@@ -38,7 +38,9 @@ import org.opentcs.data.model.Vehicle;
 import org.opentcs.drivers.vehicle.VehicleCommAdapterDescription;
 import org.opentcs.drivers.vehicle.management.VehicleAttachmentInformation;
 import org.opentcs.kernel.extensions.servicewebapi.KernelExecutorWrapper;
+import org.opentcs.drivers.vehicle.VehicleCommAdapterMessage;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.GetVehicleResponseTO;
+import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleCommAdapterPositionRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleRoutesRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PutVehicleAcceptableOrderTypesTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.shared.AcceptableOrderTypeTO;
@@ -479,6 +481,53 @@ class VehicleHandlerTest {
                 new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
                     .setSourcePoint("some-source-point")
                     .setResourcesToAvoid(List.of("some-unknown-resource"))
+            )
+        );
+  }
+
+  @Test
+  void setVehicleCommAdapterPosition() {
+    // Act
+    handler.postVehicleCommAdapterPosition(
+        "some-vehicle",
+        new PostVehicleCommAdapterPositionRequestTO("some-point")
+    );
+
+    // Assert
+    ArgumentCaptor<VehicleCommAdapterMessage> messageCaptor
+        = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
+    then(vehicleService)
+        .should()
+        .sendCommAdapterMessage(eq(vehicle.getReference()), messageCaptor.capture());
+    assertThat(messageCaptor.getValue().getType()).isEqualTo("tcs:virtualVehicle:setPosition");
+    assertThat(messageCaptor.getValue().getParameters()).containsEntry("position", "some-point");
+  }
+
+  @Test
+  void resetVehicleCommAdapterPositionWhenNewValueIsNull() {
+    // Act
+    handler.postVehicleCommAdapterPosition(
+        "some-vehicle",
+        new PostVehicleCommAdapterPositionRequestTO(null)
+    );
+
+    // Assert
+    ArgumentCaptor<VehicleCommAdapterMessage> messageCaptor
+        = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
+    then(vehicleService)
+        .should()
+        .sendCommAdapterMessage(eq(vehicle.getReference()), messageCaptor.capture());
+    assertThat(messageCaptor.getValue().getType()).isEqualTo("tcs:virtualVehicle:resetPosition");
+    assertThat(messageCaptor.getValue().getParameters()).isEmpty();
+  }
+
+  @Test
+  void throwOnSetPositionForUnknownVehicle() {
+    assertThatExceptionOfType(ObjectUnknownException.class)
+        .isThrownBy(
+            () -> handler.postVehicleCommAdapterPosition(
+                "some-unknown-vehicle",
+                new PostVehicleCommAdapterPositionRequestTO("some-point")
             )
         );
   }
