@@ -36,6 +36,7 @@ import org.opentcs.data.model.Path;
 import org.opentcs.data.model.Point;
 import org.opentcs.data.model.Vehicle;
 import org.opentcs.drivers.vehicle.VehicleCommAdapterDescription;
+import org.opentcs.drivers.vehicle.VehicleCommAdapterMessage;
 import org.opentcs.drivers.vehicle.management.VehicleAttachmentInformation;
 import org.opentcs.kernel.extensions.servicewebapi.KernelExecutorWrapper;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.GetVehicleResponseTO;
@@ -100,13 +101,9 @@ class VehicleHandlerTest {
 
   @Test
   void throwOnAttachAdapterForUnknownVehicle() {
+    String adapterClassName = MockVehicleCommAdapterDescription.class.getName();
     assertThatExceptionOfType(ObjectUnknownException.class)
-        .isThrownBy(
-            () -> handler.putVehicleCommAdapter(
-                "some-unknown-vehicle",
-                MockVehicleCommAdapterDescription.class.getName()
-            )
-        );
+        .isThrownBy(() -> handler.putVehicleCommAdapter("some-unknown-vehicle", adapterClassName));
   }
 
   @Test
@@ -293,12 +290,10 @@ class VehicleHandlerTest {
 
   @Test
   void throwOnUpdateAcceptableOrderTypesForUnknownVehicle() {
+    var orderTypes = new PutVehicleAcceptableOrderTypesTO(List.of());
     assertThatExceptionOfType(ObjectUnknownException.class)
         .isThrownBy(
-            () -> handler.putVehicleAcceptableOrderTypes(
-                "some-unknown-vehicle",
-                new PutVehicleAcceptableOrderTypesTO(List.of())
-            )
+            () -> handler.putVehicleAcceptableOrderTypes("some-unknown-vehicle", orderTypes)
         );
   }
 
@@ -338,35 +333,28 @@ class VehicleHandlerTest {
         );
 
     // Act & Assert: nonexistent vehicle
+    var requestForUnknownVehicle = new PostVehicleRoutesRequestTO(List.of("some-destination-point"));
     assertThatExceptionOfType(ObjectUnknownException.class)
         .isThrownBy(
-            () -> handler.getVehicleRoutes(
-                "some-unknown-vehicle",
-                1,
-                new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
-            )
+            () -> handler.getVehicleRoutes("some-unknown-vehicle", 1, requestForUnknownVehicle)
         );
 
     // Act & Assert: nonexistent destination point
+    var requestForUnknownPoint
+        = new PostVehicleRoutesRequestTO(List.of("some-unknown-destination-point"));
     assertThatExceptionOfType(ObjectUnknownException.class)
         .isThrownBy(
-            () -> handler.getVehicleRoutes(
-                "some-vehicle",
-                1,
-                new PostVehicleRoutesRequestTO(List.of("some-unknown-destination-point"))
-            )
+            () -> handler.getVehicleRoutes("some-vehicle", 1, requestForUnknownPoint)
         );
 
     // Act & Assert: unknown vehicle position
     given(vehicleService.fetch(Vehicle.class, "some-vehicle"))
         .willReturn(Optional.of(vehicle));
+    var requestForUnknownPosition
+        = new PostVehicleRoutesRequestTO(List.of("some-destination-point"));
     assertThatExceptionOfType(IllegalArgumentException.class)
         .isThrownBy(
-            () -> handler.getVehicleRoutes(
-                "some-vehicle",
-                1,
-                new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
-            )
+            () -> handler.getVehicleRoutes("some-vehicle", 1, requestForUnknownPosition)
         );
   }
 
@@ -403,14 +391,12 @@ class VehicleHandlerTest {
         );
 
     // Act & Assert: nonexistent source point
+    var requestForUnknownSourcePoint
+        = new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
+            .setSourcePoint("some-unknown-source-point");
     assertThatExceptionOfType(ObjectUnknownException.class)
         .isThrownBy(
-            () -> handler.getVehicleRoutes(
-                "some-vehicle",
-                1,
-                new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
-                    .setSourcePoint("some-unknown-source-point")
-            )
+            () -> handler.getVehicleRoutes("some-vehicle", 1, requestForUnknownSourcePoint)
         );
   }
 
@@ -471,15 +457,36 @@ class VehicleHandlerTest {
         );
 
     // Act & Assert: nonexistent resource to avoid
+    var requestForUnknownResource
+        = new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
+            .setSourcePoint("some-source-point")
+            .setResourcesToAvoid(List.of("some-unknown-resource"));
     assertThatExceptionOfType(ObjectUnknownException.class)
         .isThrownBy(
-            () -> handler.getVehicleRoutes(
-                "some-vehicle",
-                1,
-                new PostVehicleRoutesRequestTO(List.of("some-destination-point"))
-                    .setSourcePoint("some-source-point")
-                    .setResourcesToAvoid(List.of("some-unknown-resource"))
-            )
+            () -> handler.getVehicleRoutes("some-vehicle", 1, requestForUnknownResource)
+        );
+  }
+
+  @Test
+  void postVehicleCommAdapterPosition() {
+    // Act
+    handler.postVehicleCommAdapterPosition("some-vehicle", "some-point");
+
+    // Assert
+    ArgumentCaptor<VehicleCommAdapterMessage> captor
+        = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
+    then(vehicleService)
+        .should()
+        .sendCommAdapterMessage(eq(vehicle.getReference()), captor.capture());
+    assertThat(captor.getValue().getType()).isEqualTo("tcs:virtualVehicle:initPosition");
+    assertThat(captor.getValue().getParameters()).containsEntry("position", "some-point");
+  }
+
+  @Test
+  void throwOnPostPositionForUnknownVehicle() {
+    assertThatExceptionOfType(ObjectUnknownException.class)
+        .isThrownBy(
+            () -> handler.postVehicleCommAdapterPosition("some-unknown-vehicle", "some-point")
         );
   }
 
