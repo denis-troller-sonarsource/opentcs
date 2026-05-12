@@ -333,7 +333,8 @@ class VehicleHandlerTest {
         );
 
     // Act & Assert: nonexistent vehicle
-    var requestForUnknownVehicle = new PostVehicleRoutesRequestTO(List.of("some-destination-point"));
+    var requestForUnknownVehicle =
+        new PostVehicleRoutesRequestTO(List.of("some-destination-point"));
     assertThatExceptionOfType(ObjectUnknownException.class)
         .isThrownBy(
             () -> handler.getVehicleRoutes("some-unknown-vehicle", 1, requestForUnknownVehicle)

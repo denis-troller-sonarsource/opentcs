@@ -13,7 +13,6 @@ import io.javalin.apibuilder.EndpointGroup;
 import io.javalin.http.Context;
 import jakarta.inject.Inject;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.opentcs.access.Kernel;
@@ -273,7 +272,8 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterEnabled(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapterEnabled(ctx.pathParam("NAME"), ctx.queryParam(QUERY_PARAM_NEW_VALUE));
+    vehicleHandler.putVehicleCommAdapterEnabled(ctx.pathParam("NAME"),
+                                ctx.queryParam(QUERY_PARAM_NEW_VALUE));
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
@@ -332,7 +332,8 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterAttachment(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapter(ctx.pathParam("NAME"), ctx.queryParam(QUERY_PARAM_NEW_VALUE));
+    vehicleHandler.putVehicleCommAdapter(ctx.pathParam("NAME"),
+    ctx.queryParam(QUERY_PARAM_NEW_VALUE));
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
