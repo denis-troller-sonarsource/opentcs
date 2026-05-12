@@ -490,7 +490,9 @@ class VehicleHandlerTest {
 
     ArgumentCaptor<VehicleCommAdapterMessage> captor
         = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
-    then(vehicleService).should().sendCommAdapterMessage(eq(vehicle.getReference()), captor.capture());
+    then(vehicleService).should().sendCommAdapterMessage(
+        eq(vehicle.getReference()), captor.capture()
+    );
     assertThat(captor.getValue().getType()).isEqualTo("tcs:virtualVehicle:setPosition");
     assertThat(captor.getValue().getParameters()).containsEntry("position", "some-point");
   }
@@ -501,7 +503,9 @@ class VehicleHandlerTest {
 
     ArgumentCaptor<VehicleCommAdapterMessage> captor
         = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
-    then(vehicleService).should().sendCommAdapterMessage(eq(vehicle.getReference()), captor.capture());
+    then(vehicleService).should().sendCommAdapterMessage(
+        eq(vehicle.getReference()), captor.capture()
+    );
     assertThat(captor.getValue().getType()).isEqualTo("tcs:virtualVehicle:resetPosition");
     assertThat(captor.getValue().getParameters()).isEmpty();
   }
