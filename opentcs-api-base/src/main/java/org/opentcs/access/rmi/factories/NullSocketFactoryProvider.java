@@ -18,6 +18,7 @@ public class NullSocketFactoryProvider
 
   @Inject
   public NullSocketFactoryProvider() {
+    // Empty - no configuration needed for null socket factory provider.
   }
 
   @Override
