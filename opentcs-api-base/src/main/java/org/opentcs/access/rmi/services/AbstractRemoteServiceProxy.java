@@ -122,14 +122,14 @@ abstract class AbstractRemoteServiceProxy<R extends Remote> {
    * @return The runtime exception.
    */
   RuntimeException findSuitableExceptionFor(RemoteException ex) {
-    if (ex.getCause() instanceof ObjectUnknownException) {
-      return (ObjectUnknownException) ex.getCause();
+    if (ex.getCause() instanceof ObjectUnknownException objectUnknownException) {
+      return objectUnknownException;
     }
-    if (ex.getCause() instanceof ObjectExistsException) {
-      return (ObjectExistsException) ex.getCause();
+    if (ex.getCause() instanceof ObjectExistsException objectExistsException) {
+      return objectExistsException;
     }
-    if (ex.getCause() instanceof IllegalArgumentException) {
-      return (IllegalArgumentException) ex.getCause();
+    if (ex.getCause() instanceof IllegalArgumentException illegalArgumentException) {
+      return illegalArgumentException;
     }
 
     if (getServiceListener() != null) {
