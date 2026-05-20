@@ -232,6 +232,25 @@ public class VehicleHandler {
     });
   }
 
+  public void postVehicleCommAdapterPosition(String name, String position)
+      throws ObjectUnknownException {
+    requireNonNull(name, "name");
+    requireNonNull(position, "position");
+
+    executorWrapper.callAndWait(() -> {
+      Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
+          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+
+      vehicleService.sendCommAdapterMessage(
+          vehicle.getReference(),
+          new VehicleCommAdapterMessage(
+              "tcs:virtualVehicle:setPosition",
+              Map.of("position", position)
+          )
+      );
+    });
+  }
+
   public void putVehicleAcceptableOrderTypes(
       String name,
       PutVehicleAcceptableOrderTypesTO acceptableOrderTypes
