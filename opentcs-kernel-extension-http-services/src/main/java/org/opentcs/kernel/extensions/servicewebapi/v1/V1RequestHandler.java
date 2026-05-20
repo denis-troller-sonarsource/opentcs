@@ -57,6 +57,7 @@ public class V1RequestHandler
    * This class's logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(V1RequestHandler.class);
+  private static final String QUERY_PARAM_NEW_VALUE = "newValue";
   private final JsonBinder jsonBinder;
   private final StatusEventDispatcher statusEventDispatcher;
   private final TransportOrderDispatcherHandler orderDispatcherHandler;
@@ -172,6 +173,7 @@ public class V1RequestHandler
           );
           put("/vehicles/{NAME}/commAdapter/enabled", this::handlePutVehicleCommAdapterEnabled);
           post("/vehicles/{NAME}/commAdapter/message", this::handlePostVehicleCommAdapterMessage);
+          post("/vehicles/{NAME}/commAdapter/position", this::handlePostVehicleCommAdapterPosition);
           put("/vehicles/{NAME}/paused", this::handlePutVehiclePaused);
           put("/vehicles/{NAME}/integrationLevel", this::handlePutVehicleIntegrationLevel);
           post("/vehicles/{NAME}/withdrawal", this::handlePostWithdrawalByVehicle);
@@ -269,7 +271,9 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterEnabled(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapterEnabled(ctx.pathParam("NAME"), ctx.queryParam("newValue"));
+    vehicleHandler.putVehicleCommAdapterEnabled(
+        ctx.pathParam("NAME"), ctx.queryParam(QUERY_PARAM_NEW_VALUE)
+    );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
@@ -280,6 +284,16 @@ public class V1RequestHandler
     vehicleHandler.postVehicleCommAdapterMessage(
         ctx.pathParam("NAME"),
         jsonBinder.fromJson(ctx.body(), PostVehicleCommAdapterMessageRequestTO.class)
+    );
+    ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
+    ctx.result("");
+  }
+
+  private void handlePostVehicleCommAdapterPosition(Context ctx)
+      throws ObjectUnknownException {
+    vehicleHandler.postVehicleCommAdapterPosition(
+        ctx.pathParam("NAME"),
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -318,7 +332,9 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterAttachment(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapter(ctx.pathParam("NAME"), ctx.queryParam("newValue"));
+    vehicleHandler.putVehicleCommAdapter(
+        ctx.pathParam("NAME"), ctx.queryParam(QUERY_PARAM_NEW_VALUE)
+    );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
@@ -481,7 +497,7 @@ public class V1RequestHandler
   private void handlePutPathLocked(Context ctx) {
     pathHandler.updatePathLock(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -490,7 +506,7 @@ public class V1RequestHandler
   private void handlePutLocationLocked(Context ctx) {
     locationHandler.updateLocationLock(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -524,7 +540,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.putVehicleIntegrationLevel(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -535,7 +551,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.putVehiclePaused(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -588,7 +604,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.putVehicleEnvelopeKey(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -606,7 +622,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     peripheralHandler.putPeripheralCommAdapterEnabled(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -644,7 +660,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     peripheralHandler.putPeripheralCommAdapter(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAM_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
