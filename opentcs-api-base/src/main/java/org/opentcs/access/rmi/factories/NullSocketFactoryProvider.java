@@ -18,6 +18,7 @@ public class NullSocketFactoryProvider
 
   @Inject
   public NullSocketFactoryProvider() {
+    // Nothing to initialize - this is a null object implementation.
   }
 
   @Override
