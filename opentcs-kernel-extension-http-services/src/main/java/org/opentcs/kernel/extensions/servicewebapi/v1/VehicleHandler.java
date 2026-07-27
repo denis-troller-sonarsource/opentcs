@@ -359,6 +359,36 @@ public class VehicleHandler {
     });
   }
 
+  public void postVehicleCommAdapterPosition(
+      String name,
+      @Nullable
+      String position
+  )
+      throws ObjectUnknownException {
+    requireNonNull(name, "name");
+
+    executorWrapper.callAndWait(() -> {
+      Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
+          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+
+      if (position == null) {
+        vehicleService.sendCommAdapterMessage(
+            vehicle.getReference(),
+            new VehicleCommAdapterMessage("tcs:virtualVehicle:resetPosition", Map.of())
+        );
+      }
+      else {
+        vehicleService.sendCommAdapterMessage(
+            vehicle.getReference(),
+            new VehicleCommAdapterMessage(
+                "tcs:virtualVehicle:setPosition",
+                Map.of("position", position)
+            )
+        );
+      }
+    });
+  }
+
   private Map<String, String> toParameterMap(List<Property> parameters) {
     Map<String, String> result = new HashMap<>();
     if (parameters != null) {
