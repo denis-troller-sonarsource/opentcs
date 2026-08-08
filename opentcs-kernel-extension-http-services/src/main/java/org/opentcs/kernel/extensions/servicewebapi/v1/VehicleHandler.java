@@ -32,6 +32,7 @@ import org.opentcs.drivers.vehicle.management.VehicleAttachmentInformation;
 import org.opentcs.kernel.extensions.servicewebapi.KernelExecutorWrapper;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.GetVehicleResponseTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleCommAdapterMessageRequestTO;
+import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleCommAdapterPositionRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleRoutesRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PutVehicleAcceptableOrderTypesTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PutVehicleEnergyLevelThresholdSetTO;
@@ -356,6 +357,36 @@ public class VehicleHandler {
           resourcesToAvoid,
           maxRoutesPerDestinationPoint
       );
+    });
+  }
+
+  public void putVehicleCommAdapterPosition(
+      String name,
+      PostVehicleCommAdapterPositionRequestTO request
+  )
+      throws ObjectUnknownException {
+    requireNonNull(name, "name");
+    requireNonNull(request, "request");
+
+    executorWrapper.callAndWait(() -> {
+      Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
+          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+
+      if (request.getNewValue() == null) {
+        vehicleService.sendCommAdapterMessage(
+            vehicle.getReference(),
+            new VehicleCommAdapterMessage("tcs:virtualVehicle:resetPosition", Map.of())
+        );
+      }
+      else {
+        vehicleService.sendCommAdapterMessage(
+            vehicle.getReference(),
+            new VehicleCommAdapterMessage(
+                "tcs:virtualVehicle:setPosition",
+                Map.of("position", request.getNewValue())
+            )
+        );
+      }
     });
   }
 
