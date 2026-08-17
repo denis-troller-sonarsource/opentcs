@@ -43,6 +43,10 @@ import org.opentcs.kernel.extensions.servicewebapi.v1.converter.VehicleConverter
  */
 public class VehicleHandler {
 
+  private static final String LOOPBACK_POSITION_MESSAGE_TYPE = "tcs:virtualVehicle:setPosition";
+  private static final String LOOPBACK_POSITION_MESSAGE_PARAMETER = "position";
+  private static final String LOOPBACK_RESET_POSITION_MESSAGE_TYPE = "tcs:virtualVehicle:resetPosition";
+
   private final InternalVehicleService vehicleService;
   private final RouterService routerService;
   private final KernelExecutorWrapper executorWrapper;
@@ -229,6 +233,32 @@ public class VehicleHandler {
               toParameterMap(request.getParameters())
           )
       );
+    });
+  }
+
+  public void postVehicleCommAdapterPosition(String name, @Nullable String newValue)
+      throws ObjectUnknownException {
+    requireNonNull(name, "name");
+
+    executorWrapper.callAndWait(() -> {
+      Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
+          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+
+      VehicleCommAdapterMessage positionMessage;
+      if (newValue == null || newValue.isBlank()) {
+        positionMessage = new VehicleCommAdapterMessage(
+            LOOPBACK_RESET_POSITION_MESSAGE_TYPE,
+            Map.of()
+        );
+      }
+      else {
+        positionMessage = new VehicleCommAdapterMessage(
+            LOOPBACK_POSITION_MESSAGE_TYPE,
+            Map.of(LOOPBACK_POSITION_MESSAGE_PARAMETER, newValue)
+        );
+      }
+
+      vehicleService.sendCommAdapterMessage(vehicle.getReference(), positionMessage);
     });
   }
 
