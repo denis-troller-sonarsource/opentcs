@@ -57,6 +57,7 @@ public class V1RequestHandler
    * This class's logger.
    */
   private static final Logger LOG = LoggerFactory.getLogger(V1RequestHandler.class);
+  private static final String QUERY_PARAMETER_NEW_VALUE = "newValue";
   private final JsonBinder jsonBinder;
   private final StatusEventDispatcher statusEventDispatcher;
   private final TransportOrderDispatcherHandler orderDispatcherHandler;
@@ -270,7 +271,10 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterEnabled(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapterEnabled(ctx.pathParam("NAME"), ctx.queryParam("newValue"));
+    vehicleHandler.putVehicleCommAdapterEnabled(
+        ctx.pathParam("NAME"),
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
+    );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
@@ -291,7 +295,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.postVehicleCommAdapterPosition(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -330,7 +334,10 @@ public class V1RequestHandler
   private void handlePutVehicleCommAdapterAttachment(Context ctx)
       throws ObjectUnknownException,
         IllegalArgumentException {
-    vehicleHandler.putVehicleCommAdapter(ctx.pathParam("NAME"), ctx.queryParam("newValue"));
+    vehicleHandler.putVehicleCommAdapter(
+        ctx.pathParam("NAME"),
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
+    );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
   }
@@ -493,7 +500,7 @@ public class V1RequestHandler
   private void handlePutPathLocked(Context ctx) {
     pathHandler.updatePathLock(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -502,7 +509,7 @@ public class V1RequestHandler
   private void handlePutLocationLocked(Context ctx) {
     locationHandler.updateLocationLock(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -536,7 +543,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.putVehicleIntegrationLevel(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -547,7 +554,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.putVehiclePaused(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -600,7 +607,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     vehicleHandler.putVehicleEnvelopeKey(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -618,7 +625,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     peripheralHandler.putPeripheralCommAdapterEnabled(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");
@@ -656,7 +663,7 @@ public class V1RequestHandler
         IllegalArgumentException {
     peripheralHandler.putPeripheralCommAdapter(
         ctx.pathParam("NAME"),
-        ctx.queryParam("newValue")
+        ctx.queryParam(QUERY_PARAMETER_NEW_VALUE)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");

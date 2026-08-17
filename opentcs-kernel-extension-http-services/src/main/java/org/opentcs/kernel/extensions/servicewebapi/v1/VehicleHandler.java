@@ -46,6 +46,8 @@ public class VehicleHandler {
   private static final String LOOPBACK_MESSAGE_TYPE_SET_POSITION
       = "tcs:virtualVehicle:setPosition";
   private static final String LOOPBACK_MESSAGE_PARAM_POSITION = "position";
+  private static final String UNKNOWN_VEHICLE_MESSAGE = "Unknown vehicle: ";
+  private static final String VALUE_PARAM = "value";
 
   private final InternalVehicleService vehicleService;
   private final RouterService routerService;
@@ -113,7 +115,7 @@ public class VehicleHandler {
     return executorWrapper.callAndWait(() -> {
       return vehicleService.fetch(Vehicle.class, name)
           .map(vehicleConverter::toGetVehicleResponseTO)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
     });
   }
 
@@ -121,11 +123,11 @@ public class VehicleHandler {
       throws ObjectUnknownException,
         IllegalArgumentException {
     requireNonNull(name, "name");
-    requireNonNull(value, "value");
+    requireNonNull(value, VALUE_PARAM);
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.updateVehicleIntegrationLevel(
           vehicle.getReference(),
@@ -138,11 +140,11 @@ public class VehicleHandler {
       throws ObjectUnknownException,
         IllegalArgumentException {
     requireNonNull(name, "name");
-    requireNonNull(value, "value");
+    requireNonNull(value, VALUE_PARAM);
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.updateVehiclePaused(vehicle.getReference(), Boolean.parseBoolean(value));
     });
@@ -155,7 +157,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.updateVehicleEnvelopeKey(vehicle.getReference(), value);
     });
@@ -165,11 +167,11 @@ public class VehicleHandler {
       throws ObjectUnknownException,
         IllegalArgumentException {
     requireNonNull(name, "name");
-    requireNonNull(value, "value");
+    requireNonNull(value, VALUE_PARAM);
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       if (Boolean.parseBoolean(value)) {
         vehicleService.enableCommAdapter(vehicle.getReference());
@@ -186,7 +188,7 @@ public class VehicleHandler {
 
     return executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       return vehicleService.fetchAttachmentInformation(vehicle.getReference());
     });
@@ -195,11 +197,11 @@ public class VehicleHandler {
   public void putVehicleCommAdapter(String name, String value)
       throws ObjectUnknownException {
     requireNonNull(name, "name");
-    requireNonNull(value, "value");
+    requireNonNull(value, VALUE_PARAM);
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       VehicleCommAdapterDescription newAdapter
           = vehicleService.fetchAttachmentInformation(vehicle.getReference())
@@ -224,7 +226,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.sendCommAdapterMessage(
           vehicle.getReference(),
@@ -239,11 +241,11 @@ public class VehicleHandler {
   public void postVehicleCommAdapterPosition(String name, String value)
       throws ObjectUnknownException {
     requireNonNull(name, "name");
-    requireNonNull(value, "value");
+    requireNonNull(value, VALUE_PARAM);
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.sendCommAdapterMessage(
           vehicle.getReference(),
@@ -265,7 +267,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.updateVehicleAcceptableOrderTypes(
           vehicle.getReference(),
@@ -291,7 +293,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       vehicleService.updateVehicleEnergyLevelThresholdSet(
           vehicle.getReference(),
@@ -316,7 +318,7 @@ public class VehicleHandler {
 
     return executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE_MESSAGE + name));
 
       TCSObjectReference<Point> sourcePointRef;
       if (request.getSourcePoint() == null) {
