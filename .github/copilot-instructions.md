@@ -4,13 +4,14 @@
 
 ## GUIDE Phase - Before Writing or Editing Code
 
-**Before writing or editing code** you MUST:
+**When exploring the codebase, before writing or editing code** you MUST:
 1. Call `get_guidelines` for project context and coding standards
 2. Call `get_current_architecture` to get a high level overview of the project's architecture
 3. Locate existing code with `search_by_signature_patterns` or `search_by_body_patterns`
 4. Read implementation with `get_source_code`
+These tools will give you more precise results than using file-system based search.
 
-**Before planning or ;aking any changes** you MUST:
+**Before planning or making any changes** you MUST:
 - Get the architectural constraints using `get_intended_architecture`
 - Analyze impact using:
   - `get_upstream_call_flow` / `get_downstream_call_flow` - trace method calls
