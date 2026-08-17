@@ -6,11 +6,12 @@
 
 **Before writing or editing code** you MUST:
 1. Call `get_guidelines` for project context and coding standards
-2. Locate existing code with `search_by_signature_patterns` or `search_by_body_patterns`
-3. Read implementation with `get_source_code`
+2. Call `get_current_architecture` to get a high level overview of the project's architecture
+3. Locate existing code with `search_by_signature_patterns` or `search_by_body_patterns`
+4. Read implementation with `get_source_code`
 
-**When changing architecture or dependencies** you MUST:
-- Check `get_current_architecture` and `get_intended_architecture`
+**Before planning or ;aking any changes** you MUST:
+- Get the architectural constraints using `get_intended_architecture`
 - Analyze impact using:
   - `get_upstream_call_flow` / `get_downstream_call_flow` - trace method calls
   - `get_references` - find all usages
@@ -23,8 +24,7 @@
 
 You must strictly follow this Analyze-Then-Commit workflow for every code modification. No code is considered complete until it has passed the following SonarQube validation loop:
 
-1. **Read Phase:** After any modification or before commit, use the `Read` tool to load the current state of all relevant source files.
-2. **Analysis Phase:** For every new or modified file, you must call `run_advanced_code_analysis` using:
+2. **Analysis Phase:** For every new or modified file, you MUST call `run_advanced_code_analysis` using:
    - `filePath`: The project-relative path to the file (e.g., `src/main/java/MyClass.java`)
    - `branchName`: The active development branch
    - `fileScope`: `["MAIN"]` or `["TEST"]` depending on the code type
