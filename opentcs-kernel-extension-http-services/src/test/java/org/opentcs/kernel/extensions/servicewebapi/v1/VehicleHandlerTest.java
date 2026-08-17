@@ -36,6 +36,7 @@ import org.opentcs.data.model.Path;
 import org.opentcs.data.model.Point;
 import org.opentcs.data.model.Vehicle;
 import org.opentcs.drivers.vehicle.VehicleCommAdapterDescription;
+import org.opentcs.drivers.vehicle.VehicleCommAdapterMessage;
 import org.opentcs.drivers.vehicle.management.VehicleAttachmentInformation;
 import org.opentcs.kernel.extensions.servicewebapi.KernelExecutorWrapper;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.GetVehicleResponseTO;
@@ -480,6 +481,46 @@ class VehicleHandlerTest {
                     .setSourcePoint("some-source-point")
                     .setResourcesToAvoid(List.of("some-unknown-resource"))
             )
+        );
+  }
+
+  @Test
+  void postVehicleCommAdapterPositionSetsPosition() {
+    // Act
+    handler.postVehicleCommAdapterPosition("some-vehicle", "some-point");
+
+    // Assert
+    ArgumentCaptor<VehicleCommAdapterMessage> messageCaptor
+        = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
+    then(vehicleService)
+        .should()
+        .sendCommAdapterMessage(eq(vehicle.getReference()), messageCaptor.capture());
+    assertThat(messageCaptor.getValue().getType())
+        .isEqualTo("tcs:virtualVehicle:setPosition");
+    assertThat(messageCaptor.getValue().getParameters())
+        .containsEntry("position", "some-point");
+  }
+
+  @Test
+  void postVehicleCommAdapterPositionResetsPositionWhenValueIsNull() {
+    // Act
+    handler.postVehicleCommAdapterPosition("some-vehicle", null);
+
+    // Assert
+    ArgumentCaptor<VehicleCommAdapterMessage> messageCaptor
+        = ArgumentCaptor.forClass(VehicleCommAdapterMessage.class);
+    then(vehicleService)
+        .should()
+        .sendCommAdapterMessage(eq(vehicle.getReference()), messageCaptor.capture());
+    assertThat(messageCaptor.getValue().getType())
+        .isEqualTo("tcs:virtualVehicle:resetPosition");
+  }
+
+  @Test
+  void postVehicleCommAdapterPositionThrowsForUnknownVehicle() {
+    assertThatExceptionOfType(ObjectUnknownException.class)
+        .isThrownBy(
+            () -> handler.postVehicleCommAdapterPosition("unknown-vehicle", "some-point")
         );
   }
 
