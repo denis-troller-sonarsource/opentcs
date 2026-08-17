@@ -43,6 +43,10 @@ import org.opentcs.kernel.extensions.servicewebapi.v1.converter.VehicleConverter
  */
 public class VehicleHandler {
 
+  private static final String LOOPBACK_MESSAGE_TYPE_SET_POSITION
+      = "tcs:virtualVehicle:setPosition";
+  private static final String LOOPBACK_MESSAGE_PARAM_POSITION = "position";
+
   private final InternalVehicleService vehicleService;
   private final RouterService routerService;
   private final KernelExecutorWrapper executorWrapper;
@@ -227,6 +231,25 @@ public class VehicleHandler {
           new VehicleCommAdapterMessage(
               request.getType(),
               toParameterMap(request.getParameters())
+          )
+      );
+    });
+  }
+
+  public void postVehicleCommAdapterPosition(String name, String value)
+      throws ObjectUnknownException {
+    requireNonNull(name, "name");
+    requireNonNull(value, "value");
+
+    executorWrapper.callAndWait(() -> {
+      Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
+          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+
+      vehicleService.sendCommAdapterMessage(
+          vehicle.getReference(),
+          new VehicleCommAdapterMessage(
+              LOOPBACK_MESSAGE_TYPE_SET_POSITION,
+              Map.of(LOOPBACK_MESSAGE_PARAM_POSITION, value)
           )
       );
     });

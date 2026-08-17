@@ -486,6 +486,38 @@ paths:
                     type: string
                     description: Details on the actual error.
                     example: Could not find vehicle 'Vehicle-0001'.
+  "/vehicles/{NAME}/commAdapter/position":
+    post:
+        tags:
+            - Vehicles
+        summary: Sets the named vehicle's loopback position.
+        description: ""
+        parameters:
+          - name: NAME
+            in: path
+            description: The name of the vehicle.
+            required: true
+            schema:
+                type: string
+          - name: newValue
+            in: query
+            description: The vehicle's new position.
+            required: true
+            schema:
+              type: string
+        responses:
+          "200":
+            description: Successful operation
+          "404":
+            description: Referencing object that could not be found.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: string
+                    description: Details on the actual error.
+                    example: Could not find vehicle 'Vehicle-0001'.
   "/vehicles/{NAME}/routeComputationQuery":
     post:
       tags:
