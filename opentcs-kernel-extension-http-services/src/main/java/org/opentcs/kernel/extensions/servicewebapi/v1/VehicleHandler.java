@@ -43,6 +43,8 @@ import org.opentcs.kernel.extensions.servicewebapi.v1.converter.VehicleConverter
  */
 public class VehicleHandler {
 
+  private static final String UNKNOWN_VEHICLE = "Unknown vehicle: ";
+
   private final InternalVehicleService vehicleService;
   private final RouterService routerService;
   private final KernelExecutorWrapper executorWrapper;
@@ -109,7 +111,7 @@ public class VehicleHandler {
     return executorWrapper.callAndWait(() -> {
       return vehicleService.fetch(Vehicle.class, name)
           .map(vehicleConverter::toGetVehicleResponseTO)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
     });
   }
 
@@ -121,7 +123,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       vehicleService.updateVehicleIntegrationLevel(
           vehicle.getReference(),
@@ -138,7 +140,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       vehicleService.updateVehiclePaused(vehicle.getReference(), Boolean.parseBoolean(value));
     });
@@ -151,7 +153,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       vehicleService.updateVehicleEnvelopeKey(vehicle.getReference(), value);
     });
@@ -165,7 +167,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       if (Boolean.parseBoolean(value)) {
         vehicleService.enableCommAdapter(vehicle.getReference());
@@ -182,7 +184,7 @@ public class VehicleHandler {
 
     return executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       return vehicleService.fetchAttachmentInformation(vehicle.getReference());
     });
@@ -195,7 +197,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       VehicleCommAdapterDescription newAdapter
           = vehicleService.fetchAttachmentInformation(vehicle.getReference())
@@ -210,6 +212,36 @@ public class VehicleHandler {
     });
   }
 
+  public void postVehicleCommAdapterPosition(
+      String name,
+      @Nullable
+      String position
+  )
+      throws ObjectUnknownException {
+    requireNonNull(name, "name");
+
+    executorWrapper.callAndWait(() -> {
+      Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
+
+      if (position == null) {
+        vehicleService.sendCommAdapterMessage(
+            vehicle.getReference(),
+            new VehicleCommAdapterMessage("tcs:virtualVehicle:resetPosition", Map.of())
+        );
+      }
+      else {
+        vehicleService.sendCommAdapterMessage(
+            vehicle.getReference(),
+            new VehicleCommAdapterMessage(
+                "tcs:virtualVehicle:setPosition",
+                Map.of("position", position)
+            )
+        );
+      }
+    });
+  }
+
   public void postVehicleCommAdapterMessage(
       String name,
       PostVehicleCommAdapterMessageRequestTO request
@@ -220,7 +252,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       vehicleService.sendCommAdapterMessage(
           vehicle.getReference(),
@@ -242,7 +274,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       vehicleService.updateVehicleAcceptableOrderTypes(
           vehicle.getReference(),
@@ -268,7 +300,7 @@ public class VehicleHandler {
 
     executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       vehicleService.updateVehicleEnergyLevelThresholdSet(
           vehicle.getReference(),
@@ -293,7 +325,7 @@ public class VehicleHandler {
 
     return executorWrapper.callAndWait(() -> {
       Vehicle vehicle = vehicleService.fetch(Vehicle.class, name)
-          .orElseThrow(() -> new ObjectUnknownException("Unknown vehicle: " + name));
+          .orElseThrow(() -> new ObjectUnknownException(UNKNOWN_VEHICLE + name));
 
       TCSObjectReference<Point> sourcePointRef;
       if (request.getSourcePoint() == null) {
