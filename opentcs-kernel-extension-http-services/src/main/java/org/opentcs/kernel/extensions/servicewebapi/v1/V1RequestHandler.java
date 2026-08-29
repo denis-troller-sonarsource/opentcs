@@ -31,6 +31,7 @@ import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostPeripheralJobR
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostTopologyUpdateRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostTransportOrderRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleCommAdapterMessageRequestTO;
+import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleCommAdapterPositionRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleRoutesRequestTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PostVehicleRoutesResponseTO;
 import org.opentcs.kernel.extensions.servicewebapi.v1.binding.PutVehicleAcceptableOrderTypesTO;
@@ -172,6 +173,10 @@ public class V1RequestHandler
           );
           put("/vehicles/{NAME}/commAdapter/enabled", this::handlePutVehicleCommAdapterEnabled);
           post("/vehicles/{NAME}/commAdapter/message", this::handlePostVehicleCommAdapterMessage);
+          post(
+              "/vehicles/{NAME}/commAdapter/position",
+              this::handlePostVehicleCommAdapterPosition
+          );
           put("/vehicles/{NAME}/paused", this::handlePutVehiclePaused);
           put("/vehicles/{NAME}/integrationLevel", this::handlePutVehicleIntegrationLevel);
           post("/vehicles/{NAME}/withdrawal", this::handlePostWithdrawalByVehicle);
@@ -280,6 +285,17 @@ public class V1RequestHandler
     vehicleHandler.postVehicleCommAdapterMessage(
         ctx.pathParam("NAME"),
         jsonBinder.fromJson(ctx.body(), PostVehicleCommAdapterMessageRequestTO.class)
+    );
+    ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
+    ctx.result("");
+  }
+
+  private void handlePostVehicleCommAdapterPosition(Context ctx)
+      throws ObjectUnknownException,
+        IllegalArgumentException {
+    vehicleHandler.postVehicleCommAdapterPosition(
+        ctx.pathParam("NAME"),
+        jsonBinder.fromJson(ctx.body(), PostVehicleCommAdapterPositionRequestTO.class)
     );
     ctx.contentType(HttpConstants.CONTENT_TYPE_TEXT_PLAIN_UTF8);
     ctx.result("");

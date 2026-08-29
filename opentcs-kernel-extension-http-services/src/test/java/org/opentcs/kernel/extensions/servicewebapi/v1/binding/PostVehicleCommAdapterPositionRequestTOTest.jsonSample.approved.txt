@@ -1,0 +1,3 @@
+{
+  "newValue" : "some-point"
+}
